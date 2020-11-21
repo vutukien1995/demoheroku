@@ -1,0 +1,119 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <p>You can contribute follow the format below: &lt;Word&gt;/&lt;Type&gt;/&lt;Meaning&gt;</p>
+            <form action="/contribute/saveContribute" method="post" id="main_form">
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls">
+                        <label>Verb</label>
+                        <select name="vocabulary_group" id="vocabulary_group" class="form-control">
+                            <option value="1000_MOST_COMMON_WORDS">1000 Most common words</option>
+                            <option value="LEVEL_1_OXFORD">Level 1 Oxford Vocabulary List</option>
+                            <option value="LEVEL_2_OXFORD">Level 2 Oxford Vocabulary List</option>
+                            <option value="LEVEL_3_OXFORD">Level 3 Oxford Vocabulary List</option>
+                            <option value="LEVEL_4_OXFORD">Level 4 Oxford Vocabulary List</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls">
+                        <label>Words:</label>
+                        <textarea rows="5" class="form-control" placeholder="Paste your phrasal verbs"
+                                  id="content" name="content"
+                                  required ></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <br>
+                <div id="success"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row" id="phrasal_verb_area">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <table class="table" id="phrasal_verb_table">
+                <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Vocabulary</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Meaning</th>
+                </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
+            <br>
+            <br>
+            <button class="btn btn-primary" id="submit_btn" form="main_form">Send your contribute</button>
+        </div>
+    </div>
+</div>
+</@layout.page>
+
+<script>
+    $(function() {
+        $("#phrasal_verb_area").hide();
+        $("#nameoremail_area").hide();
+        $("#content").keyup(function (){
+            let content = $("#content").val();
+            let lines = content.split("\n");
+
+            if (content) {
+                console.log("show");
+                $("#phrasal_verb_area").show();
+                $("#nameoremail_area").show();
+                $("#table_body").empty();
+                lines.forEach(function (line){
+                    let phrasalVerb = line.split("/");
+                    let phrasalVerbContainer = [];
+                    for (let i = 0; i<3; i++) {
+                        if (phrasalVerb[i])
+                            phrasalVerbContainer.push(phrasalVerb[i]);
+                        else
+                            phrasalVerbContainer.push("");
+                    }
+                    $("#table_body").append("<tr><th scope=\"row\">#</th>" +
+                        "<td>"+phrasalVerbContainer[0]+"</td>" +
+                        "<td>"+phrasalVerbContainer[1]+"</td>" +
+                        "<td>"+phrasalVerbContainer[2]+"</td></tr>");
+                });
+            } else {
+                console.log("hide");
+                $("#phrasal_verb_area").hide();
+                $("#nameoremail_area").hide();
+            }
+        });
+
+        $("#main_form").submit(function (event) {
+            event.preventDefault();
+        });
+
+        $("#submit_btn").click(function () {
+            if (confirm("Are you sure?")) {
+                let url = "/words/create_by_list_text";
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: {
+                        group: $("#vocabulary_group").val(),
+                        text: $("#content").val()
+                    },
+                    success: function(data) {
+                        alert(data);
+                        window.location.href = "/vocabulary";
+                    },
+                    error: function(data) {
+                        alert("Error");
+                        console.log("Error:", data);
+                    }
+                });
+            }
+        });
+
+    });
+</script>

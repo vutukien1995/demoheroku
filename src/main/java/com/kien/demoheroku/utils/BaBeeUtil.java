@@ -1,7 +1,7 @@
 package com.kien.demoheroku.utils;
 
-
 import com.kien.demoheroku.entities.PhrasalVerb;
+import com.kien.demoheroku.entities.Word;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,14 +94,40 @@ public class BaBeeUtil {
         return result;
     }
 
+    public static List<Word> getWordFromText (String text) {
+        List<Word> wordLst = new ArrayList<>();
+        String[] wordlstContainer = text.split("\n");
+
+        for (String wordTxt : wordlstContainer) {
+            Word word = new Word();
+            String[] wordContainer = wordTxt.split("/");
+            String[] wordContainer2 = new String[3];
+            for(int i = 0; i<3; i++) {
+                if (i<wordContainer.length) {
+                    wordContainer2[i] = wordContainer[i];
+                } else {
+                    wordContainer2[i] = "";
+                }
+            }
+            word.setWord(wordContainer2[0].trim().toLowerCase());
+            word.setType(wordContainer2[1].trim());
+            word.setMeaning(wordContainer2[2].trim());
+
+            wordLst.add(word);
+        }
+
+        return wordLst;
+    }
+
     public static void main(String[] args) {
-        String text = "This method throws IndexOutOfBoundsException If the beginIndex is less than zero or greater than the length of String (beginIndex<0||> length of String)";
+        String text = "home/n/Nhà";
 
-        List<String> words = BaBeeUtil.getWordsFromSentence(text);
+        List<Word> words = BaBeeUtil.getWordFromText(text);
 
-        for (String word: words) {
+        for (Word word: words) {
             System.out.println(word);
         }
+
     }
 
 }

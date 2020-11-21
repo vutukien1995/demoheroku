@@ -1,0 +1,46 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+<div class="container">
+<div class="row" id="phrasal_verb_area" style="margin-top: 100px;">
+    <div class="col-lg-8 col-md-10 mx-auto">
+
+        <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+                <label>Verb</label>
+                <select name="vocabulary_group" id="vocabulary_group" class="form-control">
+                    <option value="1000_MOST_COMMON_WORDS">1000 Most common words</option>
+                    <option value="LEVEL_1_OXFORD">Level 1 Oxford Vocabulary List</option>
+                    <option value="LEVEL_2_OXFORD">Level 2 Oxford Vocabulary List</option>
+                    <option value="LEVEL_3_OXFORD">Level 3 Oxford Vocabulary List</option>
+                    <option value="LEVEL_4_OXFORD">Level 4 Oxford Vocabulary List</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="table table-striped" style="margin-top: 60px;">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Vocabulary</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Meaning</th>
+                </tr>
+            </thead>
+            <tbody id="table_body">
+            <#if wordList??>
+            <#list wordList as word>
+            <tr>
+                <th scope="row">#</th>
+                <td>${word.word}</td>
+                <td>${word.type}</td>
+                <td>${word.meaning}</td>
+            </tr>
+            </#list>
+            </#if>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+</@layout.page>

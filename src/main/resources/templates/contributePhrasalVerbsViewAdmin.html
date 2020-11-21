@@ -47,9 +47,9 @@
             if (status == "CONFIRMED") {
                 alert("Contribute is confirmed!");
             } else {
-                let url = "/contribute/confirmContribute?id=${contribute.id}";
+                let url = "/words/create_by_list_text";
                 $.ajax({
-                    type: "GET",
+                    type: "POST",
                     url: url,
                     success: function(data) {
                         if (data) {

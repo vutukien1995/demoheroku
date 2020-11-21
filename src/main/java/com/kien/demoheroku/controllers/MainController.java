@@ -8,6 +8,7 @@ import com.kien.demoheroku.entities.PhrasalVerb;
 import com.kien.demoheroku.entities.Word;
 import com.kien.demoheroku.repositories.ContributeRepository;
 import com.kien.demoheroku.repositories.MostCommonWordRepository;
+import com.kien.demoheroku.repositories.WordRepository;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +30,16 @@ public class MainController {
     private final MostCommonWordRepository mostCommonWordRepository;
     private final ContributeRepository contributeRepository;
     private final PhrasalVerbDALImpl phrasalVerbDAL;
+    private final WordRepository wordRepository;
 
-    public MainController (
+    public MainController (WordRepository wordRepository,
                            PhrasalVerbDALImpl phrasalVerbDAL,
                            MostCommonWordRepository mostCommonWordRepository,
                            ContributeRepository contributeRepository) {
         this.phrasalVerbDAL = phrasalVerbDAL;
         this.mostCommonWordRepository = mostCommonWordRepository;
         this.contributeRepository = contributeRepository;
+        this.wordRepository = wordRepository;
     }
 
     @GetMapping("/")
@@ -184,7 +187,30 @@ public class MainController {
         return modelAndView;
     }
 
+    @GetMapping("/vocabulary")
+    public ModelAndView vocabulary () {
+        LOG.info("Index ");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("title", "About us");
+        modelAndView.addObject("background_image", "img/post-sample-image.jpg");
+        modelAndView.setViewName("vocabulary");
 
+        List<Word> wordList = wordRepository.findAll();
+        modelAndView.addObject("wordList", wordList);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/vocabulary-admin")
+    public ModelAndView vocabulary_admin () {
+        LOG.info("Vocabulary admin ");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("title", "About us");
+        modelAndView.addObject("background_image", "img/post-sample-image.jpg");
+        modelAndView.setViewName("vocabularyAdmin");
+
+        return modelAndView;
+    }
 
     public static void main(String[] args) {
         String str= "This#string-contains^s'^pecial*characters& Country: How One Family’s\".";
