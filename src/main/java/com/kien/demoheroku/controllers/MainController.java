@@ -191,7 +191,7 @@ public class MainController {
     public ModelAndView vocabulary () {
         LOG.info("Index ");
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("title", "About us");
+        modelAndView.addObject("title", "Vocabulary");
         modelAndView.addObject("background_image", "img/post-sample-image.jpg");
         modelAndView.setViewName("vocabulary");
 
@@ -205,7 +205,7 @@ public class MainController {
     public ModelAndView vocabulary_admin () {
         LOG.info("Vocabulary admin ");
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.addObject("title", "About us");
+        modelAndView.addObject("title", "Vocabulary");
         modelAndView.addObject("background_image", "img/post-sample-image.jpg");
         modelAndView.setViewName("vocabularyAdmin");
 
