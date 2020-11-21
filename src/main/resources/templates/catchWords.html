@@ -1,0 +1,85 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <form action="/phrasal_verb/doCatchWords" method="post">
+        <div class="control-group">
+          <div class="form-group floating-label-form-group controls">
+            <label>Paragraph</label>
+            <textarea rows="14" class="form-control" placeholder="Paste your paragraph"
+                      id="content" name="content"
+                      required data-validation-required-message="Please enter a paragraph.">${content}</textarea>
+            <p class="help-block text-danger"></p>
+          </div>
+        </div>
+        <br>
+        <div id="success"></div>
+        <button type="submit" class="btn btn-primary" id="sendMessageButton">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<hr>
+<br>
+<br>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <h4>Vocabulary:</h4>
+      <table class="table">
+        <tr>
+          <th>No</th>
+          <th>Vocabulary</th>
+          <th>Type</th>
+          <th>Meaning</th>
+        </tr>
+        <#list wordLst as word>
+        <tr>
+          <td>#</td>
+          <td>${word.word}</td>
+          <td>${word.type}</td>
+          <td>${word.meaning}</td>
+        </tr>
+      </#list>
+      </table>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+      <h4>Phrasal Verbs:</h4>
+      <table class="table">
+        <tr>
+          <th>No</th>
+          <th>Phrasal Verb</th>
+          <th>Definition</th>
+          <th>Example</th>
+          <th>Contributor</th>
+        </tr>
+        <#list phrasalVerbLst as phrasal>
+        <tr>
+          <td>#</td>
+          <td>${phrasal.display!''}</td>
+          <td>${phrasal.definition!''}</td>
+          <td>${phrasal.example!''}</td>
+          <td>${phrasal.contributor!''}</td>
+        </tr>
+      </#list>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+</@layout.page>

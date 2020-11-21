@@ -1,0 +1,67 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+<div class="container">
+    <div class="row" id="phrasal_verb_area">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <p>Thanks for contribution of ${contribute.contributor!''}</p>
+
+            <table class="table" id="phrasal_verb_table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Verb</th>
+                        <th>Preposition</th>
+                        <th>Display</th>
+                        <th>Definition</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+                    <#if phrasalVerbLst??>
+                    <#list phrasalVerbLst as phrasalVerb>
+                    <tr>
+                        <td>#</td>
+                        <td>${phrasalVerb.verb!''}</td>
+                        <td>${phrasalVerb.preposition!''}</td>
+                        <td>${phrasalVerb.display!''}</td>
+                        <td>${phrasalVerb.definition!''}</td>
+                        <td>${phrasalVerb.example!''}</td>
+                    </tr>
+                    </#list>
+                    </#if>
+                </tbody>
+            </table>
+            <br>
+
+            <button type="submit" class="btn btn-primary" id="confirm_btn">Confirm</button>
+        </div>
+    </div>
+</div>
+</@layout.page>
+<script>
+    $(function() {
+        let status = "${contribute.status}";
+
+        $("#confirm_btn").click(function () {
+            if (status == "CONFIRMED") {
+                alert("Contribute is confirmed!");
+            } else {
+                let url = "/contribute/confirmContribute?id=${contribute.id}";
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function(data) {
+                        if (data) {
+                            alert(data);
+                            window.location.href = "/";
+                        } else {
+                            alert(data);
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+

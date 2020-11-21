@@ -1,0 +1,82 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <p>Find Phrasal Verb with verb.
+                You can <a href="/contribute-phrasal-verbs" class="btn-link">contribute</a> to us if you think something's missing.
+            </p>
+            <form id="main_form" novalidate>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls">
+                        <label>Verb</label>
+                        <input type="text" class="form-control"
+                               placeholder="Verb" id="text_search" required>
+                    </div>
+                </div>
+                <br>
+                <div id="success"></div>
+                <!--<input type="submit" class="btn btn-primary" id="submit_btn" value="Search"></input>-->
+            </form>
+        </div>
+    </div>
+
+    <div class="row" id="phrasal_verb_area" style="margin-top: 100px;">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Phrasal Verb</th>
+                        <th>Definition</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody id="table_body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<hr>
+</@layout.page>
+
+<script>
+    $(function() {
+        $("#phrasal_verb_area").hide();
+
+        $("#main_form").submit(function( event ) {
+            event.preventDefault();
+        });
+
+        $("#text_search").keyup(function () {
+            let url = "/phrasal_verb/getByVerb?verb=" + $("#text_search").val();
+            $.ajax({
+                type: "GET",
+                url: url,
+                success: function(data) {
+                    if (data) {
+                        console.log("show");
+                        $("#table_body").empty();
+                        $("#phrasal_verb_area").show();
+                        let i = 1;
+                        data.forEach(function (element){
+                            $("#table_body").append("<tr><th scope=\"row\">"+i+"</th>" +
+                                "<td>"+element.display+"</td>" +
+                                "<td>"+element.definition+"</td>" +
+                                "<td>"+element.example+"</td></tr>");
+                            i++;
+                        });
+                    } else {
+                        console.log("hide");
+                        $("#phrasal_verb_area").hide();
+                    }
+                }
+            });
+
+        });
+    });
+</script>
