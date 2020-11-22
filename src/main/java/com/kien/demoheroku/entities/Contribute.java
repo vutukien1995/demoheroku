@@ -63,4 +63,16 @@ public class Contribute {
     public void setType(String type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Contribute{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", contributor='" + contributor + '\'' +
+                ", type='" + type + '\'' +
+                ", creationDate=" + creationDate +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }
