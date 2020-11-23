@@ -5,16 +5,24 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-8 col-md-10 mx-auto">
+      <p>
+        Paste your paragraph here. We make it easier for you to read.
+      </p>
       <form action="/phrasal_verb/doCatchWords" method="post">
         <div class="control-group">
           <div class="form-group floating-label-form-group controls">
             <label>Paragraph</label>
-            <textarea rows="14" class="form-control" placeholder="Paste your paragraph"
+            <textarea rows="10" class="form-control" placeholder="Paste your paragraph"
                       id="content" name="content"
                       required data-validation-required-message="Please enter a paragraph.">${content}</textarea>
             <p class="help-block text-danger"></p>
           </div>
         </div>
+        <br>
+
+        <p>
+          ${paragraphContent!''}
+        </p>
         <br>
         <div id="success"></div>
         <button type="submit" class="btn btn-primary" id="sendMessageButton">Submit</button>

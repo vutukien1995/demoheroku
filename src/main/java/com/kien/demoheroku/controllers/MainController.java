@@ -2,10 +2,7 @@ package com.kien.demoheroku.controllers;
 
 
 import com.kien.demoheroku.dalimpl.PhrasalVerbDALImpl;
-import com.kien.demoheroku.entities.Contribute;
-import com.kien.demoheroku.entities.MostCommonWord;
-import com.kien.demoheroku.entities.PhrasalVerb;
-import com.kien.demoheroku.entities.Word;
+import com.kien.demoheroku.entities.*;
 import com.kien.demoheroku.repositories.ContributeRepository;
 import com.kien.demoheroku.repositories.MostCommonWordRepository;
 import com.kien.demoheroku.repositories.WordRepository;
@@ -95,7 +92,6 @@ public class MainController {
                 }
             }
         }
-        // Check words after catch with api
 
         // Catch phrasal verbs
         List<PhrasalVerb> phrasalVerbLst = new ArrayList<>();
@@ -115,8 +111,14 @@ public class MainController {
             }
         }
 
+        // Build content paragraph
+        String paragraphContent = "";
+        if (!content.isEmpty()) paragraphContent = BaBeeUtil.buildHTMLParagragh((List<List<WordMask>>) BaBeeUtil.getListWordMaskFromSentences((List<String>) BaBeeUtil.getSentencesListByText(content)),
+                listWord);
+
         modelAndView.addObject("phrasalVerbLst", phrasalVerbLst);
         modelAndView.addObject("wordLst", listWord);
+        modelAndView.addObject("paragraphContent", paragraphContent);
 
         return modelAndView;
     }
