@@ -47,9 +47,9 @@
             if (status == "CONFIRMED") {
                 alert("Contribute is confirmed!");
             } else {
-                let url = "/words/create_by_list_text";
+                let url = "/contribute/confirmContribute?id=${contribute.id!''}";
                 $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: url,
                     success: function(data) {
                         if (data) {
@@ -58,6 +58,10 @@
                         } else {
                             alert(data);
                         }
+                    },
+                    error: function(data) {
+                        alert(data);
+                        console.log("Error:", data);
                     }
                 });
             }

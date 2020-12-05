@@ -16,6 +16,8 @@ public class Word {
     private String level;
     private Date creationDate = new Date();
     private String group;
+    private String audio;
+    private String pronunciation;
 
     public String getId() {
         return id;
@@ -71,6 +73,22 @@ public class Word {
 
     public void setMeaning(String meaning) {
         this.meaning = meaning;
+    }
+
+    public String getAudio() {
+        return audio;
+    }
+
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
+
+    public String getPronunciation() {
+        return pronunciation;
+    }
+
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
     }
 
     @Override

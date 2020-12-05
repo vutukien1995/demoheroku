@@ -6,7 +6,7 @@
   <div class="row">
     <div class="col-lg-8 col-md-10 mx-auto">
       <p>
-        Paste your paragraph here. We make it easier for you to read.
+        <strong> Paste your paragraph here. We make it easier for you to read. </strong>
       </p>
       <form action="/phrasal_verb/doCatchWords" method="post">
         <div class="control-group">
@@ -20,12 +20,14 @@
         </div>
         <br>
 
+        <button type="submit" class="btn btn-primary" id="sendMessageButton">Submit</button>
+        <br>
+
         <p>
           ${paragraphContent!''}
         </p>
         <br>
-        <div id="success"></div>
-        <button type="submit" class="btn btn-primary" id="sendMessageButton">Submit</button>
+
       </form>
     </div>
   </div>

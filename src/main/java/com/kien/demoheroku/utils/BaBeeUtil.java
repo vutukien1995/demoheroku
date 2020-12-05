@@ -28,11 +28,11 @@ public class BaBeeUtil {
 
     public static String removeSpecialCharacters (String text) {
         // remove possessive adjectives
-        text = text.replaceAll("’s","");
-        text = text.replaceAll("'s","");
+        text = text.replaceAll("’s", "");
+        text = text.replaceAll("'s", "");
 
         // remove special characters
-        text = text.replaceAll("[!?()<>||-–.:,'“”\"]","");
+        text = text.replaceAll("[!?()<>|.:,'“”\"]", "");
 
         text = text.trim().toLowerCase();
 
@@ -81,22 +81,20 @@ public class BaBeeUtil {
         }
 
         // check phrasal verb in sentence
-        sentence = sentence.substring(sentence.indexOf(verb) + verb.length(), sentence.length());
+        sentence = sentence.substring(sentence.indexOf(verb) + verb.length());
         return sentence.contains(" " + preposition + " ");
     }
 
-    public static List<String> getWordsFromSentence (String sentence) {
-        sentence = BaBeeUtil.removeSpecialCharacters(sentence);
-        String[] words = sentence.split(" ");
-
-        List<String> result = new ArrayList<>();
-        result.add(sentence);
-        for (String word: words) {
-            result.add(word);
-        }
-
-        return result;
-    }
+//    public static List<String> getWordsFromSentence (String sentence) {
+//        sentence = BaBeeUtil.removeSpecialCharacters(sentence);
+//        String[] words = sentence.split(" ");
+//
+//        List<String> result = new ArrayList<>();
+//        result.add(sentence);
+//        Collections.addAll(result, words);
+//
+//        return result;
+//    }
 
     public static List<Word> getWordFromText (String text) {
         List<Word> wordLst = new ArrayList<>();
@@ -123,7 +121,7 @@ public class BaBeeUtil {
         return wordLst;
     }
 
-    public static List<?> getSentencesListByText (String paragraph) {
+    public static List<String> getSentencesListByText (String paragraph) {
         ArrayList<String> result_list = new ArrayList<>();
 
         String[] entries = paragraph.split("\n");
@@ -136,7 +134,7 @@ public class BaBeeUtil {
                     if (sentence.isEmpty()) result_list.add(DOT);
                     else result_list.add(sentence);
                 }
-//                result_list.add(ENTER);
+                result_list.add(ENTER);
             }
 
         }
@@ -148,7 +146,10 @@ public class BaBeeUtil {
         ArrayList<List<WordMask>> result_list = new ArrayList<>();
 
         for (String sentence : sentencesList) {
-            if (sentence.equals(ENTER)) result_list.add(null);
+            if (sentence.equals(ENTER)) {
+                result_list.add(null);
+                continue;
+            }
 
             List<WordMask> wordMasks = new ArrayList<>();
             String[] words = sentence.split(" ");
@@ -165,53 +166,51 @@ public class BaBeeUtil {
         return result_list;
     }
 
-    public static String buildHTMLParagragh (List<List<WordMask>> list_main, List<Word> words_list) {
-        StringBuffer result = new StringBuffer("");
-
+    public static String buildHTMLParagragh (List<List<WordMask>> list_main) {
+        StringBuilder result = new StringBuilder();
         for (List<WordMask> wordMasks : list_main) {
-            if (wordMasks == null || wordMasks.get(0).getMask().equals(ENTER)) {
+            if (wordMasks == null) {
                 result.append("<br>");
                 continue;
             }
-
-            StringBuffer sentence = new StringBuffer("");
-            for (WordMask wordMask: wordMasks) {
-                Word word = words_list.stream()
-                        .filter(element -> element.getWord().equals(wordMask.getWord()))
-                        .findAny().orElse(null);
-                if (word != null) {
-                    sentence.append("<span style=\"background: #0085a1;\">" + wordMask.getMask() + "</span> ");
+            StringBuffer sentence = new StringBuffer();
+            for (WordMask wordMask : wordMasks) {
+                if (wordMask.getWord() == null) {
+                    sentence.append(wordMask.getMask()).append(" ");
+                } else if (wordMask.getWord().isEmpty()) {
+                    sentence.append(wordMask.getMask()).append(" ");
                 } else {
-                    sentence.append(wordMask.getMask() + " ");
+                    sentence.append("<span style=\"background: #32acc5;\">").append(wordMask.getMask()).append("</span> ");
                 }
             }
-            StringBuffer sentence2 = new StringBuffer(sentence.toString().trim());
-            result.append(sentence2);
+            sentence = new StringBuffer(sentence.toString().trim());
+            if (wordMasks.size()>1) sentence.append(". ");
+            result.append(sentence);
         }
 
         return result.toString();
     }
 
     public static void main(String[] args) {
-        String text = "Breaking the stigma\n" +
-                "\n" +
-                "Valentina publishes videos of Sirio doing things like going to school, while carrying a bag almost as big as he is. In another video, he is driving a play electric car. In another, he is waking up his older brother, Nilo.\n" +
-                "\n" +
-                "Sirio’s followers respond with a countless number of “likes” and messages of support.\n" +
-                "\n" +
-                "Valentina said she wanted to end the stigma – or unfair beliefs – that often surrounds disability. She wanted to show that children with special needs can still have fun and lead a happy life.\n" +
-                "\n" +
-                "“We understood that it is…necessary to talk about disability without (seeking) pity, different from the usual way disability is narrated,” she said.";
+//        String text = "Breaking the stigma\n" +
+//                "\n" +
+//                "Valentina publishes videos of Sirio doing things like going to school, while carrying a bag almost as big as he is. In another video, he is driving a play electric car. In another, he is waking up his older brother, Nilo.\n" +
+//                "\n" +
+//                "Sirio’s followers respond with a countless number of “likes” and messages of support.\n" +
+//                "\n" +
+//                "Valentina said she wanted to end the stigma – or unfair beliefs – that often surrounds disability. She wanted to show that children with special needs can still have fun and lead a happy life.\n" +
+//                "\n" +
+//                "“We understood that it is…necessary to talk about disability without (seeking) pity, different from the usual way disability is narrated,” she said.";
 
-        List<String> list = (List<String>) BaBeeUtil.getSentencesListByText(text);
+//        List<String> list = (List<String>) BaBeeUtil.getSentencesListByText(text);
 
-        for (String str: list) {
-            System.out.println(str);
-        }
+//        for (String str: list) {
+//            System.out.println(str);
+//        }
+//
+//        List<?> list2 = BaBeeUtil.getListWordMaskFromSentences(list);
 
-        List<?> list2 = BaBeeUtil.getListWordMaskFromSentences(list);
-
-        System.out.println(list2);
+//        System.out.println(list2);
     }
 
 }

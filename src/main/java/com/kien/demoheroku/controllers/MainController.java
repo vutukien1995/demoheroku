@@ -2,10 +2,12 @@ package com.kien.demoheroku.controllers;
 
 
 import com.kien.demoheroku.dalimpl.PhrasalVerbDALImpl;
+import com.kien.demoheroku.dalimpl.WordDALImpl;
 import com.kien.demoheroku.entities.*;
 import com.kien.demoheroku.repositories.ContributeRepository;
 import com.kien.demoheroku.repositories.MostCommonWordRepository;
 import com.kien.demoheroku.repositories.WordRepository;
+import com.kien.demoheroku.utils.HttpClient;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +19,18 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kien.demoheroku.utils.BaBeeUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @RestController
 public class MainController {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
+    private final int THREAD_NUMBER = 26;
 
     private final MostCommonWordRepository mostCommonWordRepository;
     private final ContributeRepository contributeRepository;
@@ -72,49 +80,89 @@ public class MainController {
         // Get list sentences from paragraph
         List<String> listSentence = BaBeeUtil.getListSentences(content);
 
-        // Catch unknown words
-        List<Word> listWord = new ArrayList<>();
-        List<MostCommonWord> allCommonWordsList = mostCommonWordRepository.findAll();
-        for (String sentence : listSentence) {
-            String[] listWordInSentence = sentence.split(" ");
-            for (String word: listWordInSentence) {
-                if (word.isEmpty() || word.length() == 1) continue;
+        // Catch words with api
+        List<List<WordMask>> listWordMask = (List<List<WordMask>>) BaBeeUtil.getListWordMaskFromSentences(BaBeeUtil.getSentencesListByText(content));
 
-                MostCommonWord commonWord = allCommonWordsList.stream()
-                        .filter(element -> word.equals(element.getWord()))
-                        .findAny().orElse(null);
-                if (commonWord == null) {
-                    Word word_to_view = new Word();
-                    word_to_view.setWord(word);
-                    word_to_view.setType("n");
-                    word_to_view.setMeaning("what is mean?");
-                    listWord.add(word_to_view);
+        // Get list common word
+        List<MostCommonWord> allCommonWordsList = mostCommonWordRepository.findAll();
+
+        // Standardize word to infinitive
+        ExecutorService executor = Executors.newFixedThreadPool(THREAD_NUMBER);
+        List<Future<WordMask>> futureList = new ArrayList<>();
+        for (List<WordMask> wordMasks : listWordMask) {
+            if (wordMasks != null)
+                for (WordMask wordMask : wordMasks) {
+                    // Word of wordMask is empty => next
+                    if (wordMask.getWord().isEmpty()) {
+                        continue;
+                    }
+
+                    // Check in common words
+                    MostCommonWord commonWord = allCommonWordsList.stream()
+                            .filter(element -> wordMask.getWord().equals(element.getWord()))
+                            .findAny().orElse(null);
+                    if (commonWord != null || wordMask.getWord().length() == 1) {
+                        wordMask.setWord(null);
+                    } else {
+                        Callable worker = new HttpClient(wordMask);
+                        Future future = executor.submit(worker);
+                        futureList.add(future);
+                    }
                 }
+        }
+
+        // Catch unknown words v2
+        List<Word> listWord = new ArrayList<>();
+        for (Future<WordMask> future : futureList) {
+            try {
+                WordMask wordMask = future.get();
+
+                // Check in common words
+                MostCommonWord commonWord = allCommonWordsList.stream()
+                        .filter(element -> wordMask.getWord().equals(element.getWord()))
+                        .findAny().orElse(null);
+                if (commonWord != null)
+                    wordMask.setWord(null);
+
+                if (wordMask.getWord() != null) {
+                    Word duplicateWord =  listWord.stream()
+                            .filter(element -> wordMask.getWord().equals(element.getWord()))
+                            .findAny().orElse(null);
+                    if (duplicateWord == null) {
+                        listWord.addAll(wordMask.getWords());
+                    }
+                }
+            } catch (Exception e) {
+                LOG.error("Catch word v2 error message " + e.getMessage());
             }
         }
+        executor.shutdown();
+        // Sort list of words
+        Collections.sort(listWord, (w1, w2) -> {
+            return w1.getWord().compareTo(w2.getWord());
+        });
 
         // Catch phrasal verbs
         List<PhrasalVerb> phrasalVerbLst = new ArrayList<>();
-        for (String sentence : listSentence) {
-            // Words from sentence
-            List<String> words = BaBeeUtil.getWordsFromSentence(sentence);
-            for (int i = 1; i<words.size(); i++) {
-                List<PhrasalVerb> pvList = phrasalVerbDAL.getListByVerb(words.get(i));
-                if (pvList.size()>0) {
-                    // Check phrasal verb have in sentence
-                    for (PhrasalVerb pv : pvList) {
-                        if (BaBeeUtil.checkPhrasalVerbInSentence(pv.getVerb(), pv.getPreposition(), words.get(0))) {
-                            phrasalVerbLst.add(pv);
-                        }
-                    }
-                }
-            }
-        }
+//        for (String sentence : listSentence) {
+//            // Words from sentence
+//            List<String> words = BaBeeUtil.getWordsFromSentence(sentence);
+//            for (int i = 1; i<words.size(); i++) {
+//                List<PhrasalVerb> pvList = phrasalVerbDAL.getListByVerb(words.get(i));
+//                if (pvList.size()>0) {
+//                    // Check phrasal verb have in sentence
+//                    for (PhrasalVerb pv : pvList) {
+//                        if (BaBeeUtil.checkPhrasalVerbInSentence(pv.getVerb(), pv.getPreposition(), words.get(0))) {
+//                            phrasalVerbLst.add(pv);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         // Build content paragraph
         String paragraphContent = "";
-        if (!content.isEmpty()) paragraphContent = BaBeeUtil.buildHTMLParagragh((List<List<WordMask>>) BaBeeUtil.getListWordMaskFromSentences((List<String>) BaBeeUtil.getSentencesListByText(content)),
-                listWord);
+        if (!content.isEmpty()) paragraphContent = BaBeeUtil.buildHTMLParagragh(listWordMask);
 
         modelAndView.addObject("phrasalVerbLst", phrasalVerbLst);
         modelAndView.addObject("wordLst", listWord);
