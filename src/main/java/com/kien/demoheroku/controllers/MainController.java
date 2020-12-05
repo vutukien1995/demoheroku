@@ -1,11 +1,10 @@
 package com.kien.demoheroku.controllers;
 
 
-import com.kien.demoheroku.dalimpl.PhrasalVerbDALImpl;
-import com.kien.demoheroku.dalimpl.WordDALImpl;
 import com.kien.demoheroku.entities.*;
 import com.kien.demoheroku.repositories.ContributeRepository;
 import com.kien.demoheroku.repositories.MostCommonWordRepository;
+import com.kien.demoheroku.repositories.PhrasalVerbRepository;
 import com.kien.demoheroku.repositories.WordRepository;
 import com.kien.demoheroku.utils.HttpClient;
 import org.bson.types.ObjectId;
@@ -25,6 +24,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 @RestController
 public class MainController {
@@ -34,17 +34,17 @@ public class MainController {
 
     private final MostCommonWordRepository mostCommonWordRepository;
     private final ContributeRepository contributeRepository;
-    private final PhrasalVerbDALImpl phrasalVerbDAL;
     private final WordRepository wordRepository;
+    private final PhrasalVerbRepository phrasalVerbRepository;
 
-    public MainController (WordRepository wordRepository,
-                           PhrasalVerbDALImpl phrasalVerbDAL,
-                           MostCommonWordRepository mostCommonWordRepository,
-                           ContributeRepository contributeRepository) {
-        this.phrasalVerbDAL = phrasalVerbDAL;
+    public MainController(WordRepository wordRepository,
+                          MostCommonWordRepository mostCommonWordRepository,
+                          ContributeRepository contributeRepository,
+                          PhrasalVerbRepository phrasalVerbRepository) {
         this.mostCommonWordRepository = mostCommonWordRepository;
         this.contributeRepository = contributeRepository;
         this.wordRepository = wordRepository;
+        this.phrasalVerbRepository = phrasalVerbRepository;
     }
 
     @GetMapping("/")
@@ -144,21 +144,26 @@ public class MainController {
 
         // Catch phrasal verbs
         List<PhrasalVerb> phrasalVerbLst = new ArrayList<>();
-//        for (String sentence : listSentence) {
-//            // Words from sentence
-//            List<String> words = BaBeeUtil.getWordsFromSentence(sentence);
-//            for (int i = 1; i<words.size(); i++) {
-//                List<PhrasalVerb> pvList = phrasalVerbDAL.getListByVerb(words.get(i));
-//                if (pvList.size()>0) {
-//                    // Check phrasal verb have in sentence
-//                    for (PhrasalVerb pv : pvList) {
-//                        if (BaBeeUtil.checkPhrasalVerbInSentence(pv.getVerb(), pv.getPreposition(), words.get(0))) {
-//                            phrasalVerbLst.add(pv);
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        List<PhrasalVerb> listAllPhrasalVerb = phrasalVerbRepository.findAll();
+        for (String sentence : listSentence) {
+            // Words from sentence
+            List<String> words = BaBeeUtil.getWordsFromSentence(sentence);
+            for (int i = 1; i<words.size(); i++) {
+                String word = words.get(i);
+                List<PhrasalVerb> pvList = listAllPhrasalVerb.stream()
+                        .filter(element -> word.equals(element.getVerb()))
+                        .collect(Collectors.toList());
+
+                if (pvList.size()>0) {
+                    // Check phrasal verb have in sentence
+                    for (PhrasalVerb pv : pvList) {
+                        if (BaBeeUtil.checkPhrasalVerbInSentence(pv.getVerb(), pv.getPreposition(), words.get(0))) {
+                            phrasalVerbLst.add(pv);
+                        }
+                    }
+                }
+            }
+        }
 
         // Build content paragraph
         String paragraphContent = "";

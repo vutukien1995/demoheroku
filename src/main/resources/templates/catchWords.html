@@ -14,16 +14,18 @@
             <label>Paragraph</label>
             <textarea rows="10" class="form-control" placeholder="Paste your paragraph"
                       id="content" name="content"
+                      style="font-size: 18px;"
                       required data-validation-required-message="Please enter a paragraph.">${content}</textarea>
-            <p class="help-block text-danger"></p>
           </div>
         </div>
         <br>
 
         <button type="submit" class="btn btn-primary" id="sendMessageButton">Submit</button>
         <br>
+        <br>
+        <br>
 
-        <p>
+        <p style="font-size: 18px;">
           ${paragraphContent!''}
         </p>
         <br>
@@ -42,22 +44,15 @@
   <div class="row">
     <div class="col-lg-8 col-md-10 mx-auto">
       <h4>Vocabulary:</h4>
-      <table class="table">
-        <tr>
-          <th>No</th>
-          <th>Vocabulary</th>
-          <th>Type</th>
-          <th>Meaning</th>
-        </tr>
-        <#list wordLst as word>
-        <tr>
-          <td>#</td>
-          <td>${word.word}</td>
-          <td>${word.type}</td>
-          <td>${word.meaning}</td>
-        </tr>
+      <#list wordLst as word>
+      <p style="font-size: 17px;">
+        <strong>${word.word}</strong> - <em>${word.type}</em>. ${word.meaning}
+        <audio controls>
+          <source src="${word.audio}" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </p>
       </#list>
-      </table>
     </div>
   </div>
 </div>
@@ -80,7 +75,7 @@
         </tr>
         <#list phrasalVerbLst as phrasal>
         <tr>
-          <td>#</td>
+          <td>.</td>
           <td>${phrasal.display!''}</td>
           <td>${phrasal.definition!''}</td>
           <td>${phrasal.example!''}</td>

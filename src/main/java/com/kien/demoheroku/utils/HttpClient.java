@@ -88,8 +88,13 @@ public class HttpClient implements Callable {
 
     @Override
     public WordMask call() {
-        this.wordMask.setWords(getWordStandardFromText(wordMask.getWord()));
-        this.wordMask.setWord(this.wordMask.getWords().get(0).getWord());
+        List<Word> words = getWordStandardFromText(wordMask.getWord());
+        if (words == null || words.size() == 0) {
+            this.wordMask.setWord(null);
+        } else {
+            this.wordMask.setWords(words);
+            this.wordMask.setWord(this.wordMask.getWords().get(0).getWord());
+        }
         return this.wordMask;
     }
 

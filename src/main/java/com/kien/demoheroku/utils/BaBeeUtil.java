@@ -5,6 +5,7 @@ import com.kien.demoheroku.entities.Word;
 import com.kien.demoheroku.entities.WordMask;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BaBeeUtil {
@@ -24,6 +25,17 @@ public class BaBeeUtil {
         }
 
         return list;
+    }
+
+    public static List<String> getWordsFromSentence (String sentence) {
+        sentence = BaBeeUtil.removeSpecialCharacters(sentence);
+        String[] words = sentence.split(" ");
+
+        List<String> result = new ArrayList<>();
+        result.add(sentence);
+        Collections.addAll(result, words);
+
+        return result;
     }
 
     public static String removeSpecialCharacters (String text) {
@@ -84,17 +96,6 @@ public class BaBeeUtil {
         sentence = sentence.substring(sentence.indexOf(verb) + verb.length());
         return sentence.contains(" " + preposition + " ");
     }
-
-//    public static List<String> getWordsFromSentence (String sentence) {
-//        sentence = BaBeeUtil.removeSpecialCharacters(sentence);
-//        String[] words = sentence.split(" ");
-//
-//        List<String> result = new ArrayList<>();
-//        result.add(sentence);
-//        Collections.addAll(result, words);
-//
-//        return result;
-//    }
 
     public static List<Word> getWordFromText (String text) {
         List<Word> wordLst = new ArrayList<>();
