@@ -1,6 +1,7 @@
 package com.kien.demoheroku.controllers;
 
 
+import com.kien.demoheroku.dto.DictionaryAPIDTO;
 import com.kien.demoheroku.entities.*;
 import com.kien.demoheroku.repositories.ContributeRepository;
 import com.kien.demoheroku.repositories.MostCommonWordRepository;
@@ -263,6 +264,23 @@ public class MainController {
         modelAndView.addObject("title", "Vocabulary");
         modelAndView.addObject("background_image", "img/post-sample-image.jpg");
         modelAndView.setViewName("vocabularyAdmin");
+
+        return modelAndView;
+    }
+
+    @GetMapping("/dictionary")
+    public ModelAndView dictionary (@RequestParam(value="text", required=false, defaultValue = "") String text) {
+        LOG.info("/dictionary ");
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("title", "Dictionary");
+        modelAndView.addObject("background_image", "img/post-sample-image.jpg");
+        modelAndView.setViewName("dictionary");
+
+        if (!text.isEmpty()) {
+            DictionaryAPIDTO[] words = HttpClient.getWordFromText(text);
+            modelAndView.addObject("words", words);
+            modelAndView.addObject("text", text);
+        }
 
         return modelAndView;
     }

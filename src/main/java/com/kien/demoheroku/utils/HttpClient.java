@@ -22,7 +22,7 @@ public class HttpClient implements Callable {
         this.wordMask = wordMask;
     }
 
-    public static String getInfinitiveWordFromText (String text) {
+    public static DictionaryAPIDTO[] getWordFromText (String text) {
         HttpResponse<String> response = Unirest.get("https://api.dictionaryapi.dev/api/v2/entries/en/{word}")
                 .routeParam("word", text)
                 .asString();
@@ -31,13 +31,10 @@ public class HttpClient implements Callable {
             Gson gson = new Gson();
             DictionaryAPIDTO[] words = gson.fromJson(response.getBody(), DictionaryAPIDTO[].class);
 
-            String result;
+            if (words.length == 0) words = null;
+            System.out.println("[Info] " + text + " -> " + words);
 
-            if (words.length == 0) result = null;
-            else result = words[0].getWord();
-            System.out.println("[Info] " + text + " -> " + result);
-
-            return result;
+            return words;
         } catch (Exception e) {
             System.out.println("[Error] " + text + " -> " + e.getMessage());
             return null;
@@ -107,7 +104,7 @@ public class HttpClient implements Callable {
     }
 
     public static void main(String[] args) {
-        System.out.println("check:" + HttpClient.getInfinitiveWordFromText("finds"));
+//        System.out.println("check:" + HttpClient.getInfinitiveWordFromText("finds"));
 
     }
 

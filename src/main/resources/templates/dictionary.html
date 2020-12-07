@@ -1,0 +1,80 @@
+<#import "layout.html" as layout>
+
+<@layout.page>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <form id="main_form" novalidate>
+                <div class="control-group">
+                    <div class="form-group floating-label-form-group controls">
+                        <label>Verb</label>
+                        <input type="text" class="form-control"
+                               placeholder="Word" id="text_search" required>
+                    </div>
+                </div>
+                <br>
+            </form>
+        </div>
+    </div>
+
+    <div class="row" id="phrasal_verb_area" style="margin-top: 100px;">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            <#if words??>
+            <#list words as word>
+            <h3>${word.word}</h3>
+                <#if word.phonetics??>
+                <#list word.phonetics as phonetic>
+                <p>${phonetic.text}</p>
+                <audio controls>
+                    <source src="${phonetic.audio}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                </#list>
+                </#if>
+
+                <#if word.meanings??>
+                <#list word.meanings as meaning>
+                <p><em># ${meaning.partOfSpeech!''}</em></p>
+
+                    <#if meaning.definitions??>
+                    <#list meaning.definitions as definition>
+                    <p><strong>${definition.definition!''}</strong></p>
+                    <p><em>${definition.example!''}</em></p>
+
+                        <#if definition.synonyms??>
+                        <p><strong>synonyms: </strong>
+                        <#list definition.synonyms as synonym>
+                        ${synonym},
+                        </#list>
+                        </p>
+                        </#if>
+
+                    </#list>
+                    </#if>
+
+                    <br>
+                </#list>
+                </#if>
+
+            </#list>
+            </#if>
+        </div>
+    </div>
+
+</div>
+
+<hr>
+</@layout.page>
+
+<script>
+    $(function() {
+        $("#text_search").val("${text}");
+
+        $("#main_form").submit(function( event ) {
+            event.preventDefault();
+            let url = "/dictionary?text=" + $("#text_search").val();
+
+            window.location.href = url;
+        });
+    });
+</script>
