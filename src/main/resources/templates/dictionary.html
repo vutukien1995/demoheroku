@@ -68,7 +68,7 @@
 
 <script>
     $(function() {
-        $("#text_search").val("${text}");
+        $("#text_search").val("${text!''}");
 
         $("#main_form").submit(function( event ) {
             event.preventDefault();
