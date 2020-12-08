@@ -46,7 +46,7 @@
       <h4>Vocabulary:</h4>
       <#list wordLst as word>
       <p style="font-size: 17px;">
-        <strong>${word.word}</strong> - <em>${word.type}</em>. ${word.meaning}
+        <strong>${word.word}</strong> ${word.text} - <em>${word.type}</em>. ${word.meaning}
         <audio controls>
           <source src="${word.audio}" type="audio/mpeg">
           Your browser does not support the audio element.

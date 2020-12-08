@@ -63,6 +63,7 @@ public class HttpClient implements Callable {
                     r_word.setType(meaning.getPartOfSpeech());
                     r_word.setPronunciation(phonetics.length>0 ? phonetics[0].getText() : "");
                     r_word.setAudio(phonetics.length>0 ? phonetics[0].getAudio() : "");
+                    r_word.setText(phonetics.length>0 ? phonetics[0].getText() : "");
                     for (Definition definition: meaning.getDefinitions()) {
                         if (r_word.getMeaning() == null)
                             r_word.setMeaning(definition.getDefinition() + "<br><br>");
