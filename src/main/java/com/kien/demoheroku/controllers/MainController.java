@@ -3,10 +3,7 @@ package com.kien.demoheroku.controllers;
 
 import com.kien.demoheroku.dto.DictionaryAPIDTO;
 import com.kien.demoheroku.entities.*;
-import com.kien.demoheroku.repositories.ContributeRepository;
-import com.kien.demoheroku.repositories.MostCommonWordRepository;
-import com.kien.demoheroku.repositories.PhrasalVerbRepository;
-import com.kien.demoheroku.repositories.WordRepository;
+import com.kien.demoheroku.repositories.*;
 import com.kien.demoheroku.utils.HttpClient;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -37,15 +34,17 @@ public class MainController {
     private final ContributeRepository contributeRepository;
     private final WordRepository wordRepository;
     private final PhrasalVerbRepository phrasalVerbRepository;
+    private final LogRepository logRepository;
 
     public MainController(WordRepository wordRepository,
                           MostCommonWordRepository mostCommonWordRepository,
                           ContributeRepository contributeRepository,
-                          PhrasalVerbRepository phrasalVerbRepository) {
+                          PhrasalVerbRepository phrasalVerbRepository, LogRepository logRepository) {
         this.mostCommonWordRepository = mostCommonWordRepository;
         this.contributeRepository = contributeRepository;
         this.wordRepository = wordRepository;
         this.phrasalVerbRepository = phrasalVerbRepository;
+        this.logRepository = logRepository;
     }
 
     @GetMapping("/")
@@ -72,6 +71,9 @@ public class MainController {
 
     @GetMapping("/catch-the-words")
     public ModelAndView catchTheWords(@RequestParam(value="content", required=false, defaultValue = "") String content) {
+        LOG.info("Call /catch-the-words.");
+        if (!content.isEmpty()) logRepository.save(new Log("CATCH_WORD", content));
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.addObject("content", content);
         modelAndView.addObject("title", "Catch Words");
